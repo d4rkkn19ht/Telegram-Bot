@@ -8,7 +8,7 @@ import requests
 
 from gtts import gTTS
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters
 import speech_recognition as sr
 
 import Constants as keys
@@ -43,54 +43,68 @@ def command():
         return query
 
 def voice(update : Update, context : CallbackContext):
-    query = command().lower()
-
-    if query == "":
-        context.bot.send_message(chat_id=id, text="Tôi đang lắng nghe ?")
-        bot = "Tôi đang lắng nghe ?"
-        speak(bot)
-    elif "Xin chào" in query:
-        context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : Xin chào' )
-        bot = "Xin chào" + {update.effective_user.first_name}
-        context.bot.send_message(chat_id=id, text=bot)
-        speak(bot)
-    elif "mấy giờ rồi" in query:
-        context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : thời gian')
-        bot = datetime.datetime.now().strftime("Bây giờ là : %H:%M:%S")
-        context.bot.send_message(chat_id=id, text=bot)
-        speak(bot)
-    elif "tìm kiếm" in query:
-        context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : Tìm Kiếm')
-        bot = "Bạn muốn tìm kiếm gì trên Google ?"
-        context.bot.send_message(chat_id=id, text=bot)
-        speak(bot)
-        search = command().lower()
-        context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : {search}')
-        url = f"https://google.com/search?q={search}"
-        wb.get().open(url)
-        context.bot.send_message(chat_id=id, text=f"Kết quả tìm kiếm trên Google cho từ khóa : {search} \n{url}")
-        speak("Kết quả tìm kiếm")
-    elif "youtube" in query:
-        context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : Youtube')
-        bot = "Bạn muốn tìm kiếm gì trên Youtube ?"
-        context.bot.send_message(chat_id=id, text=bot)
-        speak(bot)
-        search = command().lower()
-        context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : {search}')
-        url = f"https://youtube.com/search?q={search}"
-        wb.get().open(url)
-        context.bot.send_message(chat_id=id, text=f"Kết quả tìm kiếm video trên Youtube cho từ khóa : {search} \n{url}")
-        speak("Kết quả tìm kiếm")
-    elif "tạm biệt" in query:
-        context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : Tạm biệt')
-        bot = query
-        context.bot.send_message(chat_id=id, text=bot)
-        speak(bot)
-    else:
-        bot = "Bạn muốn nói gì ?"
-        update.message.reply_text(bot)
-        speak(bot)
-
+    while True:
+        query = command().lower()
+        if query == "":
+            context.bot.send_message(chat_id=id, text="Tôi đang lắng nghe ?")
+            bot = "Tôi đang lắng nghe ?"
+            speak(bot)
+        elif "xin chào" in query:
+            context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : Xin chào' )
+            bot = f"Xin chào {update.effective_user.first_name} \nTôi có thể giúp gì cho bạn ?"
+            context.bot.send_message(chat_id=id, text=bot)
+            speak(bot)
+            while True:
+                query1 = command().lower()
+                if "mấy giờ rồi" in query1:
+                    context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : thời gian')
+                    bot = datetime.datetime.now().strftime("Bây giờ là : %H:%M:%S")
+                    context.bot.send_message(chat_id=id, text=bot)
+                    speak(bot)
+                    break
+                elif "tìm kiếm" in query1:
+                    context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : Tìm Kiếm')
+                    bot = "Bạn muốn tìm kiếm gì trên Google ?"
+                    context.bot.send_message(chat_id=id, text=bot)
+                    speak(bot)
+                    search = command().lower()
+                    context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : {search}')
+                    url = f"https://google.com/search?q={search}"
+                    wb.get().open(url)
+                    context.bot.send_message(chat_id=id, text=f"Kết quả tìm kiếm trên Google cho từ khóa : {search} \n{url}")
+                    speak("Kết quả tìm kiếm")
+                    break
+                elif "youtube" in query1:
+                    context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : Youtube')
+                    bot = "Bạn muốn tìm kiếm gì trên Youtube ?"
+                    context.bot.send_message(chat_id=id, text=bot)
+                    speak(bot)
+                    search = command().lower()
+                    context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : {search}')
+                    url = f"https://youtube.com/search?q={search}"
+                    wb.get().open(url)
+                    context.bot.send_message(chat_id=id, text=f"Kết quả tìm kiếm video trên Youtube cho từ khóa : {search} \n{url}")
+                    speak("Kết quả tìm kiếm")
+                    break
+                elif "chức năng" in query1:
+                    context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : {query1}')
+                    function_command()
+                    break
+                elif "tạm biệt" in query1:
+                    context.bot.send_message(chat_id=id, text=f'{update.effective_user.first_name} : Tạm biệt')
+                    bot = query1
+                    context.bot.send_message(chat_id=id, text=bot)
+                    speak(bot)
+                    break
+                else:
+                    bot = "Bạn muốn nói gì ?"
+                    update.message.reply_text(bot)
+                    speak(bot)
+            break
+        else:
+            bot = "Hệ thống không xác định được câu lệnh của bạn..."
+            update.message.reply_text(bot)
+            speak(bot)
 # # # Các hàm chức năng cơ bản :
 
 # Chào
@@ -118,14 +132,6 @@ def news_command(update: Update, context: CallbackContext):
         update.message.reply_text('Vui lòng chọn số lượng tin hiển thị!!')
         speak("Vui lòng chọn số lượng tin hiển thị")
     speak("Đã cập nhật lúc : " + thoigian)
-
-# Tìm kiếm Google
-def search():
-    text = input("Bạn muốn tìm kiếm gì ?\n")
-    text = text.replace(' ', '+')
-    url = f"https://google.com/search?q={text}"
-    print("Kết quả tìm kiếm : " + url)
-    wb.get().open(url)
 
 # Thời gian
 def time_command(update: Update, context: CallbackContext):
@@ -157,14 +163,17 @@ def function_command(update: Update, context: CallbackContext):
                               "4./info     : Xem thông tin\n"
                               "5./time     : Xem ngày giờ\n \n"
                               "Tin Tức \n \n"
-                              "6./news + n : Xem tin tức\n"
+                              "6./news + <num> : Xem tin tức\n"
                               "7./auto     : Tự động cập nhật tin tức mỗi 30 phút\n"
                               "8./stop     : Ngưng cập nhật tin tức\n"
                               "9./covid    : Xem số liệu covid theo thời gian thực\n \n"
+                              "10./weather + <city> : Thời tiết"
                               "Ramdom \n \n"
                               "10./rq        : Quotes ngẫu nhiên\n"
                               "11./random   : Lấy số ngẫu nhiên (trong khoảng 0 đến 100)\n \n"
-                              "***./voice   : Tổ hợp tính năng bằng giọng nói"
+                              "Tìm kiếm\n \n"
+                              "12./search + <sth>  : Tìm kiếm trên Google\n \n"
+                              "***./voice   : Tổ hợp tính năng bằng giọng nói\n"
                               "********************************************************")
 
 # Cập nhật số ca Covid toàn cầu
@@ -207,8 +216,53 @@ def stop_notify(update, context):
     job = context.job_queue.get_jobs_by_name(str(chat_id))
     job[0].schedule_removal()
 
+# Hàm tìm kiếm
+def search(update : Update, context):
+    search = str(context.args[0])
+    url = f"https://google.com/search?q={search}"
+    context.bot.send_message(chat_id=id, text="Kết quả tìm kiếm : " + url)
+    wb.get().open(url)
 
-#---------------------------------------------------------
+# Hàm thời tiết
+def weather(update : Update, context):
+    api_key = "b4750c6250a078a943b3bf920bb138a0"
+    city = str(context.args[0])
+    url = "http://api.openweathermap.org/data/2.5/weather?appid=" + api_key + "&q=" + city + "&units=metric"
+    response = requests.get(url)
+    data = json.loads(response.text)
+    if data["cod"] != "404":
+        # lấy value của key main
+        city_res = data["main"]
+        # nhiệt độ hiện tại
+        current_temperature = city_res["temp"]
+        # áp suất hiện tại
+        current_pressure = city_res["pressure"]
+        # độ ẩm hiện tại
+        current_humidity = city_res["humidity"]
+        # thời gian mặt trời
+        suntime = data["sys"]
+        # thông tin thêm
+        wthr = data["weather"]
+        # mô tả thời tiết
+        weather_description = wthr[0]["description"]
+        # Lấy thời gian hệ thống cho vào biến now
+        now = datetime.datetime.now()
+        # hiển thị thông tin với người dùng
+        content = f"""
+        Thời tiết {city} ngày {now.day} tháng {now.month} năm {now.year}
+        Thời tiết hiện tại : {weather_description}
+        Nhiệt độ trung bình là {current_temperature} độ C
+        Áp suất không khí là {current_pressure} héc tơ Pascal
+        Độ ẩm là {current_humidity}%
+        """
+        update.message.reply_text(content)
+        speak(content)
+    else:
+        # nếu tên thành phố không đúng thì nó nói dòng dưới 227
+        update.message.reply_text("Không tìm thấy địa chỉ của bạn")
+        speak("Không tìm thấy địa chỉ của bạn")
+
+# ---------------------------------------------------------
 # Function dùng để xác định lỗi gì khi có thông báo lỗi
 def error(update: Update, context: CallbackContext):
     print(f"Update {update} cause error {context.error}")
@@ -228,6 +282,8 @@ def main():
     dp.add_handler(CommandHandler("auto", start_auto_messaging))
     dp.add_handler(CommandHandler("stop", stop_notify))
     dp.add_handler(CommandHandler("voice", voice))
+    dp.add_handler(CommandHandler("search", search))
+    dp.add_handler(CommandHandler("weather", weather))
     dp.add_error_handler(error)
 
     updater.start_polling()
